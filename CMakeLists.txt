@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(skeleton_tracker)
 
-#set(OpenCV_DIR /opt/ros/indigo/share/OpenCV)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
-  #OpenCV
   geometry_msgs
   image_transport
   kdl_conversions
@@ -42,28 +40,22 @@ catkin_package(
   DEPENDS system_lib opencv
 )
 
-set(OPENNI2_DIR ~/Desktop/OpenNI2)
-set(OPENNI2_WRAPPER /opt/ros/indigo/include/openni2_camera/)
-set(NITE2_DIR ~/Desktop/NiTE-2.0.0/)
-set(NITE2_LIB ~/Desktop/NiTE-2.0.0/Redist/libNiTE2.so)
+set(OPENNI2_LIB_DIR $ENV{OPENNI2_REDIST})
+set(OPENNI2_INCLUDE_DIR $ENV{OPENNI2_INCLUDE})
+set(NITE2_LIB_DIR $ENV{NITE2_REDIST64})
+set(NITE2_INCLUDE_DIR $ENV{NITE2_INCLUDE})
 
+link_directories(${OPENNI2_LIB_DIR})
+link_directories(${NITE2_LIB_DIR})
 
-link_directories(${OPENNI2_DIR}/Bin/x64-Release)
-
-include_directories(${OPENNI2_DIR}/Bin/x64-Release)
-include_directories(/usr/include/openni2/)
-include_directories(${OPENNI2_DIR}/Include)
-include_directories(${OPENNI2_WRAPPER})
-include_directories(${NITE2_DIR}/Include)
-include_directories(${OpenCV_INCLUDE_DIRS}/include)
-
-#message(STATUS ${OpenCV_LIBRARIES})
+include_directories(${OPENNI2_INCLUDE_DIR})
+include_directories(${NITE2_INCLUDE_DIR})
 
 add_executable(xtion_tracker src/xtion_tracker_node.cpp)
 add_dependencies(xtion_tracker skeleton_tracker_gencpp)  # Generate messages first
 
-target_link_libraries(xtion_tracker OpenNI2 ${NITE2_LIB} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(xtion_tracker OpenNI2 NiTE2 ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(skeleton_tracker src/skeleton_tracker_node.cpp)
 
 add_dependencies(skeleton_tracker skeleton_tracker_gencpp)  # Generate messages first
-target_link_libraries(skeleton_tracker OpenNI2 ${NITE2_LIB} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(skeleton_tracker OpenNI2 NiTE2 ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
