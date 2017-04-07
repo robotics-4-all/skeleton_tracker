@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(skeleton_tracker)
 
+#set(OpenCV_DIR /opt/ros/indigo/share/OpenCV)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
+  #OpenCV
   geometry_msgs
   image_transport
   kdl_conversions
@@ -17,8 +20,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   message_generation
 )
-
-#find_package(opencv REQUIRED)
 
 include_directories(
     include
@@ -41,10 +42,11 @@ catkin_package(
   DEPENDS system_lib opencv
 )
 
-set(OPENNI2_DIR ~/OpenNI2)
+set(OPENNI2_DIR ~/Desktop/OpenNI2)
 set(OPENNI2_WRAPPER /opt/ros/indigo/include/openni2_camera/)
-set(NITE2_DIR ~/Openni2/NiTE-2.0.0/)
-set(NITE2_LIB ~/Openni2/NiTE-2.0.0/Redist/libNiTE2.so)
+set(NITE2_DIR ~/Desktop/NiTE-2.0.0/)
+set(NITE2_LIB ~/Desktop/NiTE-2.0.0/Redist/libNiTE2.so)
+
 
 link_directories(${OPENNI2_DIR}/Bin/x64-Release)
 
@@ -55,7 +57,13 @@ include_directories(${OPENNI2_WRAPPER})
 include_directories(${NITE2_DIR}/Include)
 include_directories(${OpenCV_INCLUDE_DIRS}/include)
 
+#message(STATUS ${OpenCV_LIBRARIES})
+
 add_executable(xtion_tracker src/xtion_tracker_node.cpp)
+add_dependencies(xtion_tracker skeleton_tracker_gencpp)  # Generate messages first
+
 target_link_libraries(xtion_tracker OpenNI2 ${NITE2_LIB} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(skeleton_tracker src/skeleton_tracker_node.cpp)
+
+add_dependencies(skeleton_tracker skeleton_tracker_gencpp)  # Generate messages first
 target_link_libraries(skeleton_tracker OpenNI2 ${NITE2_LIB} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
