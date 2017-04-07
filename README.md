@@ -5,7 +5,7 @@ openni2_tracker
 
 ### Installation
 
-## Install OpenNI2
+#### Install OpenNI2
 
 Installation instructions: https://github.com/occipital/openni2
 
@@ -52,7 +52,7 @@ export OPENNI2_REDIST=/home/klpanagi/Desktop/OpenNI2/Packaging/OpenNI-Linux-x64-
 
 These can be used to include OpenNI2 in your own C++ project
 
-For simplicity, if you are going to builde a project that depends on OpenNI2, copy those commands in your shell rc file. For example, if your default shell is `bash`:
+4. For simplicity, if you are going to builde a project that depends on OpenNI2, copy those commands in your shell rc file. For example, if your default shell is `bash`:
 
 ```bash
 $ echo "export OPENNI2_INCLUDE=/home/klpanagi/Desktop/OpenNI2/Packaging/OpenNI-Linux-x64-2.2/Include" >> ~/.bashrc
@@ -65,17 +65,33 @@ $ echo "export OPENNI2_REDIST=/home/klpanagi/Desktop/OpenNI2/Packaging/OpenNI-Li
 $ cat OpenNIDevEnvironment >> ~/.bashrc
 ```
 
+#### Download and Install NiTE2
 
-2. Install Nite2 from the OpenNI Website [here](http://www.openni.org/files/nite/?count=1&download=http://www.openni.org/wp-content/uploads/2013/10/NiTE-Linux-x64-2.2.tar1.zip).  Be sure to match the version (x86 or x64) with the version of OpenNI2 you installed above.
-You will probably need to create a free account.
+1. Download [NiTE2-Linux-x64-2.2](http://ilab.usc.edu/packages/forall/current/NiTE-Linux-x64-2.2.tar.bz2)
 
-    Change directories to the NiTE location and install with
+2. Change directories to the NiTE location and install with
 
-    ```bash
-    cd NiTE-Linux-x64-2.2
-    sudo ./install.sh
-    ```
-    Try and run one of the examples in `.../NiTE-Linux-x64-2.2/Samples/Bin/NiTE2`.  If these don't work, then something went wrong with your installation.
+```bash
+$ cd NiTE-Linux-x64-2.2
+$ ./install.sh
+```
+
+This will generate a file that exports ENV variables for Include and Library Paths.
+
+The generated NiTEDevEnvironment file contains the following (Example for x64 architecture):
+
+```bash
+export NITE2_INCLUDE=/home/klpanagi/Desktop/NiTE-Linux-x64-2.2/Include
+export NITE2_REDIST64=/home/klpanagi/Desktop/NiTE-Linux-x64-2.2/Redist
+```
+
+These can be used to include NiTE2 in your own C++ project
+
+3. For simplicity, if you are going to build a project that depends on NiTE, copy those commands in your shell rc file. For example, if your default shell is `bash`:
+
+```bash
+$ cat NiTEDevEnvironment >> ~/.bashrc
+```
 
 3. Clone `openni2_tracker` to your ROS workspace.
 
@@ -83,33 +99,14 @@ You will probably need to create a free account.
     git clone git@github.com:futureneer/openni2-tracker.git
     ```
 
-4. Configure CMake
-    In the CMakeLists.txt file inside the `openni2_tracker` package, you will need to change the path where CMake will look for OpenNI2 and NiTE2.  These two lines:
-
-    ```makefile
-    set(OPENNI2_DIR ~/OpenNI2)
-		set(OPENNI2_WRAPPER /opt/ros/indigo/include/openni2_camera/)
-		set(NITE2_DIR ~/Openni2/NiTE-2.0.0/)
-		set(NITE2_LIB ~/Openni2/NiTE-2.0.0/Redist/libNiTE2.so)
-
-		link_directories(${OPENNI2_DIR}/Bin/x64-Release)
-
-		include_directories(${OPENNI2_DIR}/Bin/x64-Release)
-		include_directories(/usr/include/openni2/)
-		include_directories(${OPENNI2_DIR}/Include)
-		include_directories(${OPENNI2_WRAPPER})
-		include_directories(${NITE2_DIR}/Include)
-		include_directories(${OpenCV_INCLUDE_DIRS}/include)
-    ```
-    need to point to the root directories of where you extracted or cloned OpenNI2 and NiTE2.
-
-
 5. Make openni2_tracker
 
     ```bash
-    cd your_catkin_workspace/
+    cd <your_catkin_workspace>/
     catkin_make
     ```
+
+#### TODO!!
 
 6. Set up NiTE2: Right now, NiTE requires that any executables point to a training sample directory at `.../NiTE-Linux-x64-2.2/Samples/Bin/NiTE2`.  If you run the NiTE sample code, this works fine because those examples are in that same directory.  However, to be able to roslaunch or rosrun openni2_tracker from any current directory, I have created a workaround script `setup_nite.bash`.  This script creates a symbolic link of the NiTE2 directory in your .ros directory (the default working directory for roslaunch / rosrun).  You will need to modify this file so that it points to YOUR NiTE2 and .ros locations.  I would be pleased if anyone has a better solution to this.
 7. Run openni2_tracker
