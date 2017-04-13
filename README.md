@@ -93,48 +93,29 @@ These can be used to include NiTE2 in your own C++ project
 $ cat NiTEDevEnvironment >> ~/.bashrc
 ```
 
-3. Clone `openni2_tracker` to your ROS workspace.
+####  Run skeleton_tracker
 
-    ```bash
-    git clone git@github.com:futureneer/openni2-tracker.git
-    ```
+```bash
+roslaunch skeleton_tracker tracker.launch
+```
 
-5. Make openni2_tracker
+In the lauch file, you can rename both the tracker name and the tracker's relative frame.  I have included a static publisher that aligns the tracker frame to the world frame, approximately 1.25m off the floor.
 
-    ```bash
-    cd <your_catkin_workspace>/
-    catkin_make
-    ```
+```xml
+<!-- openni2_tracker Launch File -->
+<launch>
 
-#### TODO!!
+<arg name="tracker_name" default="tracker" />
 
-6. Set up NiTE2: Right now, NiTE requires that any executables point to a training sample directory at `.../NiTE-Linux-x64-2.2/Samples/Bin/NiTE2`.  If you run the NiTE sample code, this works fine because those examples are in that same directory.  However, to be able to roslaunch or rosrun openni2_tracker from any current directory, I have created a workaround script `setup_nite.bash`.  This script creates a symbolic link of the NiTE2 directory in your .ros directory (the default working directory for roslaunch / rosrun).  You will need to modify this file so that it points to YOUR NiTE2 and .ros locations.  I would be pleased if anyone has a better solution to this.
-7. Run openni2_tracker
+<node name="tracker" output="screen" pkg="skeleton_tracker" type="tracker" >
+<param name="tf_prefix" value="$(arg tracker_name)" />
+<param name="relative_frame" value="/$(arg tracker_name)_depth_frame" />
+</node>
 
-    ```bash
-    roslaunch skeleton_tracker tracker.launch
-    ```
+<!-- TF Static Transforms to World -->
+<node pkg="tf" type="static_transform_publisher" name="world_to_tracker" args=" 0 0 1.25 1.5707 0 1.7707  /world /$(arg tracker_name)_depth_frame 100"/>
 
-    In the lauch file, you can rename both the tracker name and the tracker's relative frame.  I have included a static publisher that aligns the tracker frame to the world frame, approximately 1.25m off the floor.
+</launch>
+```
 
-    ```xml
-    <!-- openni2_tracker Launch File -->
-    <launch>
-
-      <arg name="tracker_name" default="tracker" />
-
-      <node name="tracker" output="screen" pkg="skeleton_tracker" type="tracker" >
-        <param name="tf_prefix" value="$(arg tracker_name)" />
-        <param name="relative_frame" value="/$(arg tracker_name)_depth_frame" />
-      </node>
-
-      <!-- TF Static Transforms to World -->
-      <node pkg="tf" type="static_transform_publisher" name="world_to_tracker" args=" 0 0 1.25 1.5707 0 1.7707  /world /$(arg tracker_name)_depth_frame 100"/>
-
-    </launch>
-    ```
-
-    Currently, this node will broadcast TF frames of the joints of any user being tracked by the tracker.  The frame names are based on the tracker name, currently `/tracker/user_x/joint_name`. The node will also publish the Point Cloud and the Video stream.
-
-### THANKS!
-Please let me know if something doesnt work, or if you have suggestions (or feel free to add stuff and send a pull request).
+Currently, this node will broadcast TF frames of the joints of any user being tracked by the tracker.  The frame names are based on the tracker name, currently `/tracker/user_x/joint_name`. The node will also publish the Point Cloud and the Video stream.
