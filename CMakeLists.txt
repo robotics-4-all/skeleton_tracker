@@ -59,3 +59,7 @@ add_executable(skeleton_tracker src/skeleton_tracker_node.cpp)
 
 add_dependencies(skeleton_tracker skeleton_tracker_gencpp)  # Generate messages first
 target_link_libraries(skeleton_tracker OpenNI2 NiTE2 ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+
+add_custom_command(TARGET skeleton_tracker POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${NITE2_LIB_DIR}/NiTE2 "~/.ros/NiTE2"
+  )
