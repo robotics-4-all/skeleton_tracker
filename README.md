@@ -92,6 +92,9 @@ These can be used to include NiTE2 in your own C++ project
 ```bash
 $ cat NiTEDevEnvironment >> ~/.bashrc
 ```
+####  Build/Comnpile skeleton_tracker
+
+Build as a regular ros package (in a catkin workspace)!
 
 ####  Run skeleton_tracker
 
