@@ -18,7 +18,7 @@ $ sudo apt-get install libusb-1.0-0-dev libudev-dev python g++ freeglut3-dev ope
 2. Clone and build the OpenNI2 repository from Github:
 
     ```bash
-    git clone git@github.com:robotics-4-all/OpenNI2.git
+    git clone git@github.com:occipital/OpenNI2.git
     ```
 
     Then, switch to the OpenNI2 directory and build:
@@ -94,7 +94,11 @@ $ cat NiTEDevEnvironment >> ~/.bashrc
 ```
 ####  Build/Comnpile skeleton_tracker
 
-Build as a regular ros package (in a catkin workspace)!
+Build the `skeleton_tracker` package as a regular ros package (in a catkin workspace):
+
+```bash
+$ cd {catkin_ws_dir} && catkin_make --pkg skeleton_tracker
+```
 
 ####  Run skeleton_tracker
 
