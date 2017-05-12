@@ -69,7 +69,7 @@
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 
-#define MAX_USERS 10
+#define MAX_USERS 1
 bool g_visibleUsers[MAX_USERS] = {false};
 nite::SkeletonState g_skeletonStates[MAX_USERS] = {nite::SKELETON_NONE};
 

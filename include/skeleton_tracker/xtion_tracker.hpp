@@ -31,7 +31,11 @@
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 
-#define MAX_USERS 10
+//VLAD
+#include <skeleton_tracker/skeletonsrv.h>
+
+#define MAX_USERS 1
+//Changed from 10 to 1 VLAD
 
 #define USER_MESSAGE(msg) \
         {printf("[%08llu] User #%d:\t%s\n",ts, user.getId(),msg);}
@@ -65,10 +69,10 @@ public:
   /**
    * Constructor
    */
+
   xtion_tracker() :
       it_(nh_)
   {
-
     // Get some parameters from the server
     ros::NodeHandle pnh("~");
     if (!pnh.getParam("tf_prefix", tf_prefix_))
@@ -198,6 +202,9 @@ public:
 
     rate_ = new ros::Rate(100);
 
+    //VLAD service
+    
+    this->setRun( false );
   }
   /**
    * Destructor
@@ -212,6 +219,14 @@ public:
    */
   void spinner()
   {
+    //do nothing 
+    if (!(this->getRun()))
+    {
+      return;
+    }
+
+
+
     // Broadcast the RGB video
     this->broadcastVideo();
 
@@ -233,12 +248,29 @@ public:
     rate_->sleep();
   }
 
+  //VLAD
+  bool run;
+  void setRun(bool value)
+  {
+    run = value;
+  }
+
+  bool getRun()
+  {
+    return run;
+  }
+  
+  bool servicecallback(skeleton_tracker::skeletonsrv::Request &request , skeleton_tracker::skeletonsrv::Response &response);
+ 
 private:
-  /**
-   * RGB Video broadcaster
-   */
+ 
+
   void broadcastVideo()
   {
+     /**
+   * RGB Video broadcaster
+   */
+
 
     if (vsColorStream_.readFrame(&vfColorFrame_) == openni::STATUS_OK)
     {
@@ -464,6 +496,7 @@ private:
 
     // Get the skeleton for every user
     for (int i = 0; i < users.getSize(); ++i)
+    //for (int i = 0; i < 1; ++i)
     {
       const nite::UserData& user = users[i];
       updateUserState(user, userTrackerFrame_.getTimestamp());
@@ -474,22 +507,22 @@ private:
       else if (user.getSkeleton().getState() == nite::SKELETON_TRACKED)
       {
         JointMap named_joints;
-
+        //VLAD 
         named_joints["head"] = (user.getSkeleton().getJoint(nite::JOINT_HEAD));
-        named_joints["neck"] = (user.getSkeleton().getJoint(nite::JOINT_NECK));
+        //named_joints["neck"] = (user.getSkeleton().getJoint(nite::JOINT_NECK));
         named_joints["left_shoulder"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_SHOULDER));
-        named_joints["right_shoulder"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_SHOULDER));
+        //named_joints["right_shoulder"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_SHOULDER));
         named_joints["left_elbow"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_ELBOW));
-        named_joints["right_elbow"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_ELBOW));
+        //named_joints["right_elbow"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_ELBOW));
         named_joints["left_hand"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_HAND));
-        named_joints["right_hand"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_HAND));
-        named_joints["torso"] = (user.getSkeleton().getJoint(nite::JOINT_TORSO));
+        //named_joints["right_hand"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_HAND));
+        //named_joints["torso"] = (user.getSkeleton().getJoint(nite::JOINT_TORSO));
         named_joints["left_hip"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_HIP));
-        named_joints["right_hip"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_HIP));
+        //named_joints["right_hip"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_HIP));
         named_joints["left_knee"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_KNEE));
-        named_joints["right_knee"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_KNEE));
+        //named_joints["right_knee"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_KNEE));
         named_joints["left_foot"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_FOOT));
-        named_joints["right_foot"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_FOOT));
+        //named_joints["right_foot"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_FOOT));
 
         for (JointMap::iterator it = named_joints.begin(); it != named_joints.end(); ++it)
         {
@@ -607,6 +640,20 @@ private:
   /// Mirroring Depth
   bool mirrorDepth_;
 
+
+
 };
+
+  //VLAD CALLBACK
+bool xtion_tracker::servicecallback(skeleton_tracker::skeletonsrv::Request &request , skeleton_tracker::skeletonsrv::Response &response)
+{
+  run = request.req;
+  response.resp = run?"OK":"Skeleton Tracker Stopped";
+
+  return true;
+  
+}
+
+
 
 #endif /* XTION_TRACKER_HPP_ */

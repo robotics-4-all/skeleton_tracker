@@ -29,6 +29,11 @@ add_message_files(
    user_IDs.msg
 )
 
+add_service_files(
+   FILES
+   skeletonsrv.srv
+)
+
 generate_messages(
     DEPENDENCIES geometry_msgs
 )
@@ -44,6 +49,8 @@ set(OPENNI2_LIB_DIR $ENV{OPENNI2_REDIST})
 set(OPENNI2_INCLUDE_DIR $ENV{OPENNI2_INCLUDE})
 set(NITE2_LIB_DIR $ENV{NITE2_REDIST64})
 set(NITE2_INCLUDE_DIR $ENV{NITE2_INCLUDE})
+
+##message(WARNING ${OpenCV_LIBRARIES})
 
 link_directories(${OPENNI2_LIB_DIR})
 link_directories(${NITE2_LIB_DIR})
